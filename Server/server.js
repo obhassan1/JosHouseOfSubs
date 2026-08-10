@@ -19,6 +19,11 @@ app.get('/api/v1/health', (_request, response) => {
 
 app.use('/api/v1/restaurant', restaurantRoutes);
 app.use('/uploads', express.static('uploads'));
+app.get('/', (_request, response) => {
+  response.json({
+    message: "Jo's House of Subs API is running"
+  });
+});
 app.use(errorMiddleware);
 
 connectDatabase()
