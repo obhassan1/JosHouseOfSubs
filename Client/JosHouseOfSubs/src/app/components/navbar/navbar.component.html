@@ -5,12 +5,19 @@
 
   <nav class="desktop-nav" aria-label="Main navigation">
     <a class="nav-link active" href="#top">Home</a>
-    <a class="nav-link" href="#menu">Menu</a>
-    <a class="nav-link" href="#story">Our Story</a>
+    <a class="nav-link" href="#bestsellers">Bestsellers</a>
+    <a class="nav-link" href="#why-jos">Why Jo's</a>
+    <a class="nav-link" href="#social">Reviews</a>
     <a class="nav-link" href="#visit">Visit</a>
   </nav>
 
-  <a class="header-cta" href="#menu">See the menu</a>
+  <a
+    class="header-cta"
+    href="https://wa.me/9613596091?text=Hi%20Jo%27s!%20I%27d%20like%20to%20place%20an%20order."
+    target="_blank"
+    rel="noreferrer">
+    Order now <span aria-hidden="true">↗</span>
+  </a>
 
   <button
     class="menu-toggle"
@@ -28,8 +35,9 @@
     [class.open]="menuOpen"
     aria-label="Mobile navigation">
     <a href="#top" (click)="closeMenu()">Home</a>
-    <a href="#menu" (click)="closeMenu()">Menu</a>
-    <a href="#story" (click)="closeMenu()">Our Story</a>
+    <a href="#bestsellers" (click)="closeMenu()">Bestsellers</a>
+    <a href="#why-jos" (click)="closeMenu()">Why Jo's</a>
+    <a href="#social" (click)="closeMenu()">Reviews</a>
     <a href="#visit" (click)="closeMenu()">Visit</a>
   </nav>
 </header>
