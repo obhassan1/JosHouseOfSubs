@@ -1,0 +1,6 @@
+Client/JosHouseOfSubs/node_modules/
+Client/JosHouseOfSubs/dist/
+Client/JosHouseOfSubs/.angular/
+Server/node_modules/
+Server/.env
+.DS_Store

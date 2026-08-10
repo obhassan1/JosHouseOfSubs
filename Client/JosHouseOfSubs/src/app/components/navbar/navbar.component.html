@@ -1,0 +1,35 @@
+<header class="site-header">
+  <a class="brand" href="#top" aria-label="Jo's House of Subs home" (click)="closeMenu()">
+    <img src="assets/images/jos-logo.jpeg" alt="Jo's House of Subs">
+  </a>
+
+  <nav class="desktop-nav" aria-label="Main navigation">
+    <a class="nav-link active" href="#top">Home</a>
+    <a class="nav-link" href="#menu">Menu</a>
+    <a class="nav-link" href="#story">Our Story</a>
+    <a class="nav-link" href="#visit">Visit</a>
+  </nav>
+
+  <a class="header-cta" href="#menu">See the menu</a>
+
+  <button
+    class="menu-toggle"
+    type="button"
+    aria-label="Toggle navigation"
+    [attr.aria-expanded]="menuOpen"
+    aria-controls="mobile-navigation"
+    (click)="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav
+    id="mobile-navigation"
+    class="mobile-nav"
+    [class.open]="menuOpen"
+    aria-label="Mobile navigation">
+    <a href="#top" (click)="closeMenu()">Home</a>
+    <a href="#menu" (click)="closeMenu()">Menu</a>
+    <a href="#story" (click)="closeMenu()">Our Story</a>
+    <a href="#visit" (click)="closeMenu()">Visit</a>
+  </nav>
+</header>

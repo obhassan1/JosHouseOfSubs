@@ -1,0 +1,48 @@
+:host { display: block; }
+.site-header {
+  height: 92px;
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  align-items: center;
+  padding: 0 clamp(24px, 5vw, 78px);
+  background: var(--white);
+  border-bottom: 3px solid var(--ink);
+  position: relative;
+  z-index: 20;
+}
+.brand { width: 142px; height: 76px; display: flex; align-items: center; overflow: hidden; }
+.brand img { width: 100%; height: auto; }
+.desktop-nav { display: flex; justify-content: center; align-items: center; gap: clamp(24px, 3.3vw, 52px); }
+.nav-link { font-weight: 800; font-size: .9rem; text-transform: uppercase; letter-spacing: .08em; position: relative; }
+.nav-link::after { content: ''; position: absolute; left: 50%; right: 50%; bottom: -10px; height: 3px; background: var(--pink); transition: .2s ease; }
+.nav-link:hover::after, .nav-link.active::after { left: 0; right: 0; }
+.header-cta {
+  justify-self: end; display: inline-flex; align-items: center; justify-content: center;
+  padding: 13px 20px; background: var(--pink); color: white; font-weight: 900;
+  text-transform: uppercase; letter-spacing: .06em; font-size: .78rem;
+  border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--ink);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.header-cta:hover { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+.menu-toggle, .mobile-nav { display: none; }
+
+@media (max-width: 980px) {
+  .site-header { grid-template-columns: 1fr auto auto; padding: 0 24px; gap: 20px; }
+  .desktop-nav { display: none; }
+  .menu-toggle { display: grid; gap: 5px; width: 42px; height: 42px; place-content: center; background: white; border: 2px solid var(--ink); cursor: pointer; }
+  .menu-toggle span { width: 20px; height: 2px; background: var(--ink); }
+  .mobile-nav {
+    display: grid; position: absolute; top: 100%; left: 0; right: 0; padding: 0 24px;
+    background: white; border-bottom: 3px solid var(--ink); max-height: 0; overflow: hidden;
+    visibility: hidden; transition: max-height .25s ease, padding .25s ease;
+  }
+  .mobile-nav.open { max-height: 330px; padding-top: 18px; padding-bottom: 18px; visibility: visible; }
+  .mobile-nav a { padding: 14px 0; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid #ddd; }
+  .mobile-nav a:last-child { border-bottom: 0; }
+}
+
+@media (max-width: 600px) {
+  .site-header { height: 76px; padding: 0 16px; grid-template-columns: 1fr auto; gap: 12px; }
+  .brand { width: 108px; height: 62px; }
+  .header-cta { display: none; }
+}
