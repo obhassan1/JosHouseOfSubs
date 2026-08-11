@@ -15,14 +15,26 @@ const port = Number(process.env.PORT) || 3000;
 app.set('trust proxy', 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
+const defaultOrigins = [
+  'http://localhost:4200',
+  'https://joshouseofsubs.com',
+  'https://www.joshouseofsubs.com',
+  'https://joshouseofsubs-web.onrender.com'
+];
+
 const configuredOrigins = [
   process.env.CLIENT_ORIGIN,
-  ...(process.env.CLIENT_ORIGINS || '').split(',')
-].filter(Boolean).map((origin) => origin.trim().replace(/\/$/, ''));
+  process.env.CLIENT_ORIGINS
+]
+  .filter(Boolean)
+  .flatMap((origins) => origins.split(','))
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
 
-const allowedOrigins = new Set(configuredOrigins.length > 0
-  ? configuredOrigins
-  : ['http://localhost:4200']);
+const allowedOrigins = new Set([
+  ...defaultOrigins,
+  ...configuredOrigins
+]);
 
 app.use(cors({
   origin(origin, callback) {
