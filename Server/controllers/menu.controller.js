@@ -9,19 +9,6 @@ function createHttpError(status, message) {
   return error;
 }
 
-function parseNullableStock(value) {
-  if (value === null || value === undefined || value === '') {
-    return null;
-  }
-
-  const quantity = Number(value);
-  if (!Number.isInteger(quantity) || quantity < 0) {
-    throw createHttpError(400, 'Stock quantity must be a non-negative whole number.');
-  }
-
-  return quantity;
-}
-
 function validateImageUrl(value) {
   const imageUrl = String(value || '').trim();
 
@@ -30,14 +17,22 @@ function validateImageUrl(value) {
   }
 
   if (imageUrl.length > MAX_IMAGE_LENGTH) {
-    throw createHttpError(413, 'The menu image is too large. Please choose a smaller image.');
+    throw createHttpError(
+      413,
+      'The menu image is too large. Please choose a smaller image.'
+    );
   }
 
-  const isSupportedDataImage = /^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=\s]+$/i.test(imageUrl);
+  const isSupportedDataImage =
+    /^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=\s]+$/i.test(imageUrl);
+
   const isSecureRemoteImage = /^https:\/\//i.test(imageUrl);
 
   if (!isSupportedDataImage && !isSecureRemoteImage) {
-    throw createHttpError(400, 'Use a JPG, PNG, or WebP image, or a secure HTTPS image URL.');
+    throw createHttpError(
+      400,
+      'Use a JPG, PNG, or WebP image, or a secure HTTPS image URL.'
+    );
   }
 
   return imageUrl;
@@ -67,10 +62,11 @@ function normalizeItem(body) {
     price,
     currency,
     imageUrl: validateImageUrl(body.imageUrl),
-    stockQuantity: parseNullableStock(body.stockQuantity),
     isAvailable: body.isAvailable !== false,
     featured: body.featured === true,
-    sortOrder: Number.isFinite(Number(body.sortOrder)) ? Number(body.sortOrder) : 0
+    sortOrder: Number.isFinite(Number(body.sortOrder))
+      ? Number(body.sortOrder)
+      : 0
   };
 }
 
@@ -84,21 +80,25 @@ exports.getPublicItems = async (_request, response, next) => {
   try {
     const items = await MenuItem.find()
       .sort({ category: 1, sortOrder: 1, name: 1 })
-      .select('name description category price currency imageUrl isAvailable stockQuantity featured sortOrder')
+      .select(
+        'name description category price currency imageUrl isAvailable featured sortOrder'
+      )
       .lean();
 
-    response.json(items.map((item) => ({
-      _id: item._id,
-      name: item.name,
-      description: item.description,
-      category: item.category,
-      price: item.price,
-      currency: item.currency,
-      imageUrl: item.imageUrl,
-      featured: item.featured,
-      sortOrder: item.sortOrder,
-      isAvailable: item.isAvailable && (item.stockQuantity === null || item.stockQuantity > 0)
-    })));
+    response.json(
+      items.map((item) => ({
+        _id: item._id,
+        name: item.name,
+        description: item.description,
+        category: item.category,
+        price: item.price,
+        currency: item.currency,
+        imageUrl: item.imageUrl,
+        featured: item.featured,
+        sortOrder: item.sortOrder,
+        isAvailable: item.isAvailable
+      }))
+    );
   } catch (error) {
     next(error);
   }
@@ -106,7 +106,10 @@ exports.getPublicItems = async (_request, response, next) => {
 
 exports.getAdminItems = async (_request, response, next) => {
   try {
-    const items = await MenuItem.find().sort({ category: 1, sortOrder: 1, name: 1 }).lean();
+    const items = await MenuItem.find()
+      .sort({ category: 1, sortOrder: 1, name: 1 })
+      .lean();
+
     response.json(items);
   } catch (error) {
     next(error);
@@ -125,10 +128,14 @@ exports.createItem = async (request, response, next) => {
 exports.updateItem = async (request, response, next) => {
   try {
     ensureValidId(request.params.id);
+
     const item = await MenuItem.findByIdAndUpdate(
       request.params.id,
       normalizeItem(request.body),
-      { new: true, runValidators: true }
+      {
+        new: true,
+        runValidators: true
+      }
     );
 
     if (!item) {
@@ -144,6 +151,7 @@ exports.updateItem = async (request, response, next) => {
 exports.deleteItem = async (request, response, next) => {
   try {
     ensureValidId(request.params.id);
+
     const item = await MenuItem.findByIdAndDelete(request.params.id);
 
     if (!item) {

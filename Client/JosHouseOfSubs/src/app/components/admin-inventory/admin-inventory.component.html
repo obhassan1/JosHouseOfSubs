@@ -1,12 +1,24 @@
 <main class="admin-page">
   <header class="admin-header">
     <a routerLink="/" class="admin-brand">
-      <img src="assets/images/jos-logo.jpeg" alt="Jo's House of Subs">
-      <div><span>Staff dashboard</span><strong>Menu &amp; inventory</strong></div>
+      <img
+        src="assets/images/jos-logo.jpeg"
+        alt="Jo's House of Subs"
+      >
+      <div>
+        <span>Staff dashboard</span>
+        <strong>Menu &amp; raw materials</strong>
+      </div>
     </a>
+
     <nav>
-      <a routerLink="/menu" target="_blank">View public menu ↗</a>
-      <button type="button" (click)="logout()">Sign out</button>
+      <a routerLink="/menu" target="_blank">
+        View public menu ↗
+      </a>
+
+      <button type="button" (click)="logout()">
+        Sign out
+      </button>
     </nav>
   </header>
 
@@ -14,136 +26,627 @@
     <div class="page-heading">
       <div>
         <p>Private staff area</p>
-        <h1>Control the<br><em>menu.</em></h1>
+        <h1>
+          Restaurant<br>
+          <em>control.</em>
+        </h1>
       </div>
-      <div class="summary-grid" aria-label="Inventory summary">
-        <div><strong>{{ items.length }}</strong><span>Total items</span></div>
-        <div><strong>{{ availableCount }}</strong><span>Available</span></div>
-        <div><strong>{{ outOfStockCount }}</strong><span>Out of stock</span></div>
+
+      <div
+        class="summary-grid"
+        aria-label="Dashboard summary"
+      >
+        <div>
+          <strong>{{ items.length }}</strong>
+          <span>Menu items</span>
+        </div>
+
+        <div>
+          <strong>{{ availableCount }}</strong>
+          <span>Available</span>
+        </div>
+
+        <div>
+          <strong>{{ materials.length }}</strong>
+          <span>Raw materials</span>
+        </div>
+
+        <div>
+          <strong>{{ lowStockCount }}</strong>
+          <span>Low stock</span>
+        </div>
       </div>
     </div>
 
-    <div class="notification error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</div>
-    <div class="notification success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div
+      class="section-tabs"
+      aria-label="Dashboard sections"
+    >
+      <button
+        type="button"
+        [class.active]="activeSection === 'menu'"
+        (click)="showSection('menu')"
+      >
+        Menu management
+      </button>
 
-    <section class="editor-card" aria-labelledby="editor-title">
-      <div class="editor-heading">
-        <div>
-          <span>{{ editingId ? 'Editing item' : 'New item' }}</span>
-          <h2 id="editor-title">{{ editingId ? 'Update menu item' : 'Add to the menu' }}</h2>
+      <button
+        type="button"
+        [class.active]="activeSection === 'materials'"
+        (click)="showSection('materials')"
+      >
+        Raw-material inventory
+      </button>
+    </div>
+
+    <div
+      class="notification error"
+      *ngIf="errorMessage"
+      role="alert"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <div
+      class="notification success"
+      *ngIf="successMessage"
+    >
+      {{ successMessage }}
+    </div>
+
+    <ng-container *ngIf="activeSection === 'menu'">
+      <section
+        class="editor-card"
+        aria-labelledby="menu-editor-title"
+      >
+        <div class="editor-heading">
+          <div>
+            <span>
+              {{ editingId ? 'Editing item' : 'New item' }}
+            </span>
+
+            <h2 id="menu-editor-title">
+              {{
+                editingId
+                  ? 'Update menu item'
+                  : 'Add to the menu'
+              }}
+            </h2>
+          </div>
+
+          <button
+            *ngIf="editingId"
+            type="button"
+            class="secondary-button"
+            (click)="cancelEdit()"
+          >
+            Cancel edit
+          </button>
         </div>
-        <button *ngIf="editingId" type="button" class="secondary-button" (click)="cancelEdit()">Cancel edit</button>
-      </div>
 
-      <form [formGroup]="itemForm" (ngSubmit)="saveItem()" novalidate>
-        <div class="form-grid">
-          <div class="form-fields">
-            <div class="field-row">
-              <label class="wide">
-                <span>Item name *</span>
-                <input type="text" formControlName="name" placeholder="Chicken Alfredo Sub">
-                <small *ngIf="itemForm.controls.name.touched && itemForm.controls.name.invalid">Item name is required.</small>
-              </label>
+        <form
+          [formGroup]="itemForm"
+          (ngSubmit)="saveItem()"
+          novalidate
+        >
+          <div class="form-grid">
+            <div class="form-fields">
+              <div class="field-row">
+                <label class="wide">
+                  <span>Item name *</span>
+
+                  <input
+                    type="text"
+                    formControlName="name"
+                    placeholder="Chicken Alfredo Sub"
+                  >
+
+                  <small
+                    *ngIf="
+                      itemForm.controls.name.touched &&
+                      itemForm.controls.name.invalid
+                    "
+                  >
+                    Item name is required.
+                  </small>
+                </label>
+
+                <label>
+                  <span>Category *</span>
+
+                  <input
+                    type="text"
+                    formControlName="category"
+                    placeholder="Subs"
+                  >
+                </label>
+              </div>
+
               <label>
-                <span>Category *</span>
-                <input type="text" formControlName="category" placeholder="Subs">
+                <span>Description</span>
+
+                <textarea
+                  formControlName="description"
+                  rows="4"
+                  placeholder="Describe the ingredients and flavor."
+                ></textarea>
               </label>
+
+              <div class="field-row three">
+                <label>
+                  <span>Price *</span>
+
+                  <input
+                    type="number"
+                    formControlName="price"
+                    min="0"
+                    step="0.01"
+                  >
+                </label>
+
+                <label>
+                  <span>Currency</span>
+
+                  <select formControlName="currency">
+                    <option value="USD">USD ($)</option>
+                    <option value="LBP">LBP</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Display order</span>
+
+                  <input
+                    type="number"
+                    formControlName="sortOrder"
+                    step="1"
+                  >
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label class="check-field">
+                  <input
+                    type="checkbox"
+                    formControlName="isAvailable"
+                  >
+
+                  <span>Visible on public menu</span>
+                </label>
+
+                <label class="check-field">
+                  <input
+                    type="checkbox"
+                    formControlName="featured"
+                  >
+
+                  <span>Featured item</span>
+                </label>
+              </div>
             </div>
+
+            <div class="image-field">
+              <span>Item picture</span>
+
+              <div class="image-preview">
+                <img
+                  *ngIf="itemForm.controls.imageUrl.value"
+                  [src]="itemForm.controls.imageUrl.value"
+                  alt="Menu item preview"
+                >
+
+                <div
+                  *ngIf="!itemForm.controls.imageUrl.value"
+                >
+                  <strong>JO'S</strong>
+                  <small>No image selected</small>
+                </div>
+              </div>
+
+              <label class="upload-button">
+                Choose picture
+
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  (change)="onImageSelected($event)"
+                >
+              </label>
+
+              <button
+                *ngIf="itemForm.controls.imageUrl.value"
+                type="button"
+                class="remove-image"
+                (click)="removeImage()"
+              >
+                Remove picture
+              </button>
+
+              <small class="image-help">
+                JPG, PNG, or WebP. The dashboard
+                optimizes it for the menu.
+              </small>
+
+              <small
+                class="field-error"
+                *ngIf="imageError"
+              >
+                {{ imageError }}
+              </small>
+            </div>
+          </div>
+
+          <button
+            class="save-button"
+            type="submit"
+            [disabled]="saving"
+          >
+            {{
+              saving
+                ? 'Saving…'
+                : (
+                    editingId
+                      ? 'Save changes'
+                      : 'Add menu item'
+                  )
+            }}
+
+            <span>→</span>
+          </button>
+        </form>
+      </section>
+
+      <section
+        class="inventory-section"
+        aria-labelledby="menu-list-title"
+      >
+        <div class="inventory-heading">
+          <div>
+            <span>Current menu</span>
+            <h2 id="menu-list-title">
+              Items &amp; prices
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            (click)="loadItems()"
+            [disabled]="loading"
+          >
+            {{ loading ? 'Loading…' : 'Refresh' }}
+          </button>
+        </div>
+
+        <div
+          class="empty-state"
+          *ngIf="!loading && items.length === 0"
+        >
+          No menu items yet. Use the form above
+          to add your first item.
+        </div>
+
+        <div class="inventory-list menu-list">
+          <article
+            *ngFor="
+              let item of items;
+              trackBy: trackById
+            "
+            [class.unavailable]="!item.isAvailable"
+          >
+            <div class="list-image">
+              <img
+                *ngIf="item.imageUrl"
+                [src]="item.imageUrl"
+                [alt]="item.name"
+              >
+
+              <span *ngIf="!item.imageUrl">
+                JO'S
+              </span>
+            </div>
+
+            <div class="list-copy">
+              <span>{{ item.category }}</span>
+              <h3>{{ item.name }}</h3>
+
+              <p>
+                {{
+                  item.description ||
+                  'No description added.'
+                }}
+              </p>
+            </div>
+
+            <div class="list-stat">
+              <span>Price</span>
+              <strong>{{ formatPrice(item) }}</strong>
+            </div>
+
+            <div class="list-stat">
+              <span>Status</span>
+
+              <strong>
+                {{
+                  item.isAvailable
+                    ? 'Visible'
+                    : 'Hidden'
+                }}
+              </strong>
+            </div>
+
+            <div class="list-actions">
+              <button
+                type="button"
+                (click)="editItem(item)"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="delete"
+                (click)="deleteItem(item)"
+                [disabled]="deletingId === item._id"
+              >
+                {{
+                  deletingId === item._id
+                    ? 'Deleting…'
+                    : 'Delete'
+                }}
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </ng-container>
+
+    <ng-container
+      *ngIf="activeSection === 'materials'"
+    >
+      <section
+        class="editor-card"
+        aria-labelledby="material-editor-title"
+      >
+        <div class="editor-heading">
+          <div>
+            <span>
+              {{
+                editingMaterialId
+                  ? 'Editing material'
+                  : 'New material'
+              }}
+            </span>
+
+            <h2 id="material-editor-title">
+              {{
+                editingMaterialId
+                  ? 'Update raw material'
+                  : 'Add raw material'
+              }}
+            </h2>
+          </div>
+
+          <button
+            *ngIf="editingMaterialId"
+            type="button"
+            class="secondary-button"
+            (click)="cancelMaterialEdit()"
+          >
+            Cancel edit
+          </button>
+        </div>
+
+        <form
+          [formGroup]="materialForm"
+          (ngSubmit)="saveMaterial()"
+          novalidate
+        >
+          <div class="material-form-grid">
+            <label>
+              <span>Material name *</span>
+
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Chicken breast"
+              >
+
+              <small
+                *ngIf="
+                  materialForm.controls.name.touched &&
+                  materialForm.controls.name.invalid
+                "
+              >
+                Material name is required.
+              </small>
+            </label>
 
             <label>
-              <span>Description</span>
-              <textarea formControlName="description" rows="4" placeholder="Describe the ingredients and flavor."></textarea>
+              <span>Current quantity *</span>
+
+              <input
+                type="number"
+                formControlName="quantity"
+                min="0"
+                step="any"
+              >
             </label>
 
-            <div class="field-row three">
-              <label>
-                <span>Price *</span>
-                <input type="number" formControlName="price" min="0" step="0.01">
-              </label>
-              <label>
-                <span>Currency</span>
-                <select formControlName="currency">
-                  <option value="USD">USD ($)</option>
-                  <option value="LBP">LBP</option>
-                </select>
-              </label>
-              <label>
-                <span>Stock quantity</span>
-                <input type="number" formControlName="stockQuantity" min="0" step="1" placeholder="Leave blank">
-                <small>Blank means stock is not counted.</small>
-              </label>
-            </div>
+            <label>
+              <span>Unit *</span>
 
-            <div class="field-row three">
-              <label>
-                <span>Display order</span>
-                <input type="number" formControlName="sortOrder" step="1">
-              </label>
-              <label class="check-field">
-                <input type="checkbox" formControlName="isAvailable">
-                <span>Available for ordering</span>
-              </label>
-              <label class="check-field">
-                <input type="checkbox" formControlName="featured">
-                <span>Featured item</span>
-              </label>
-            </div>
-          </div>
+              <input
+                type="text"
+                formControlName="unit"
+                list="material-units"
+                placeholder="kg"
+              >
 
-          <div class="image-field">
-            <span>Item picture</span>
-            <div class="image-preview">
-              <img *ngIf="itemForm.controls.imageUrl.value" [src]="itemForm.controls.imageUrl.value" alt="Menu item preview">
-              <div *ngIf="!itemForm.controls.imageUrl.value"><strong>JO'S</strong><small>No image selected</small></div>
-            </div>
-            <label class="upload-button">
-              Choose picture
-              <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onImageSelected($event)">
+              <datalist id="material-units">
+                <option value="kg"></option>
+                <option value="g"></option>
+                <option value="L"></option>
+                <option value="ml"></option>
+                <option value="pieces"></option>
+                <option value="bags"></option>
+                <option value="boxes"></option>
+              </datalist>
             </label>
-            <button *ngIf="itemForm.controls.imageUrl.value" type="button" class="remove-image" (click)="removeImage()">Remove picture</button>
-            <small class="image-help">JPG, PNG, or WebP. The dashboard optimizes it for the menu.</small>
-            <small class="field-error" *ngIf="imageError">{{ imageError }}</small>
+
+            <label>
+              <span>Low-stock warning at</span>
+
+              <input
+                type="number"
+                formControlName="minimumQuantity"
+                min="0"
+                step="any"
+              >
+            </label>
+
+            <label class="material-notes">
+              <span>Notes</span>
+
+              <textarea
+                formControlName="notes"
+                rows="3"
+                placeholder="Supplier, brand, storage location, or other notes."
+              ></textarea>
+            </label>
           </div>
+
+          <button
+            class="save-button"
+            type="submit"
+            [disabled]="materialSaving"
+          >
+            {{
+              materialSaving
+                ? 'Saving…'
+                : (
+                    editingMaterialId
+                      ? 'Save changes'
+                      : 'Add raw material'
+                  )
+            }}
+
+            <span>→</span>
+          </button>
+        </form>
+      </section>
+
+      <section
+        class="inventory-section"
+        aria-labelledby="material-list-title"
+      >
+        <div class="inventory-heading">
+          <div>
+            <span>Kitchen stock</span>
+
+            <h2 id="material-list-title">
+              Raw materials
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            (click)="loadMaterials()"
+            [disabled]="materialsLoading"
+          >
+            {{
+              materialsLoading
+                ? 'Loading…'
+                : 'Refresh'
+            }}
+          </button>
         </div>
 
-        <button class="save-button" type="submit" [disabled]="saving">
-          {{ saving ? 'Saving…' : (editingId ? 'Save changes' : 'Add menu item') }} <span>→</span>
-        </button>
-      </form>
-    </section>
+        <div
+          class="empty-state"
+          *ngIf="
+            !materialsLoading &&
+            materials.length === 0
+          "
+        >
+          No raw materials yet. Use the form
+          above to add the first one.
+        </div>
 
-    <section class="inventory-section" aria-labelledby="inventory-title">
-      <div class="inventory-heading">
-        <div><span>Current menu</span><h2 id="inventory-title">Inventory &amp; prices</h2></div>
-        <button type="button" (click)="loadItems()" [disabled]="loading">{{ loading ? 'Loading…' : 'Refresh' }}</button>
-      </div>
+        <div class="material-list">
+          <article
+            *ngFor="
+              let material of materials;
+              trackBy: trackMaterialById
+            "
+            [class.low-stock]="isLowStock(material)"
+          >
+            <div class="list-copy">
+              <span>Raw material</span>
+              <h3>{{ material.name }}</h3>
 
-      <div class="empty-state" *ngIf="!loading && items.length === 0">
-        No menu items yet. Use the form above to add your first item.
-      </div>
+              <p>
+                {{
+                  material.notes ||
+                  'No notes added.'
+                }}
+              </p>
+            </div>
 
-      <div class="inventory-list">
-        <article *ngFor="let item of items; trackBy: trackById" [class.unavailable]="!item.isAvailable">
-          <div class="list-image">
-            <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name">
-            <span *ngIf="!item.imageUrl">JO'S</span>
-          </div>
-          <div class="list-copy">
-            <span>{{ item.category }}</span>
-            <h3>{{ item.name }}</h3>
-            <p>{{ item.description || 'No description added.' }}</p>
-          </div>
-          <div class="list-stat"><span>Price</span><strong>{{ formatPrice(item) }}</strong></div>
-          <div class="list-stat"><span>Inventory</span><strong [class.warning]="item.stockQuantity === 0">{{ stockLabel(item) }}</strong></div>
-          <div class="list-stat"><span>Status</span><strong>{{ item.isAvailable ? 'Available' : 'Hidden' }}</strong></div>
-          <div class="list-actions">
-            <button type="button" (click)="editItem(item)">Edit</button>
-            <button type="button" class="delete" (click)="deleteItem(item)" [disabled]="deletingId === item._id">
-              {{ deletingId === item._id ? 'Deleting…' : 'Delete' }}
-            </button>
-          </div>
-        </article>
-      </div>
-    </section>
+            <div class="list-stat">
+              <span>Current stock</span>
+
+              <strong>
+                {{ material.quantity }}
+                {{ material.unit }}
+              </strong>
+            </div>
+
+            <div class="list-stat">
+              <span>Low-stock level</span>
+
+              <strong>
+                {{ material.minimumQuantity }}
+                {{ material.unit }}
+              </strong>
+            </div>
+
+            <div
+              class="stock-status"
+              [class.warning]="isLowStock(material)"
+            >
+              {{
+                isLowStock(material)
+                  ? 'Low stock'
+                  : 'Stock OK'
+              }}
+            </div>
+
+            <div class="list-actions">
+              <button
+                type="button"
+                (click)="editMaterial(material)"
+              >
+                Update
+              </button>
+
+              <button
+                type="button"
+                class="delete"
+                (click)="deleteMaterial(material)"
+                [disabled]="
+                  materialDeletingId === material._id
+                "
+              >
+                {{
+                  materialDeletingId === material._id
+                    ? 'Deleting…'
+                    : 'Delete'
+                }}
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </ng-container>
   </section>
 </main>

@@ -33,15 +33,6 @@ const menuItemSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  stockQuantity: {
-    type: Number,
-    default: null,
-    min: 0,
-    validate: {
-      validator: (value) => value === null || Number.isInteger(value),
-      message: 'Stock quantity must be a whole number.'
-    }
-  },
   isAvailable: {
     type: Boolean,
     default: true

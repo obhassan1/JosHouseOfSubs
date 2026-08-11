@@ -8,7 +8,6 @@ export interface MenuItem {
   price: number;
   currency: MenuCurrency;
   imageUrl: string;
-  stockQuantity?: number | null;
   isAvailable: boolean;
   featured: boolean;
   sortOrder: number;
@@ -23,7 +22,6 @@ export interface MenuItemPayload {
   price: number;
   currency: MenuCurrency;
   imageUrl: string;
-  stockQuantity: number | null;
   isAvailable: boolean;
   featured: boolean;
   sortOrder: number;
