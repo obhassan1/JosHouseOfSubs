@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+
+<main class="menu-page">
+  <section class="menu-hero">
+    <div class="checker" aria-hidden="true"></div>
+    <div>
+      <p class="eyebrow"><span></span> Fresh from the house</p>
+      <h1>Pick your<br><em>favorite.</em></h1>
+      <p>Big subs, bold burgers, and Jo's house favorites—made fresh when you order.</p>
+    </div>
+    <div class="hero-mark" aria-hidden="true">MENU</div>
+  </section>
+
+  <section class="menu-content" aria-labelledby="menu-title">
+    <div class="menu-heading">
+      <div>
+        <p class="eyebrow"><span></span> Jo's menu</p>
+        <h2 id="menu-title">Made fresh.<br><em>Served big.</em></h2>
+      </div>
+
+      <div class="category-filter" *ngIf="categories.length > 1" aria-label="Filter menu by category">
+        <button
+          *ngFor="let category of categories"
+          type="button"
+          [class.active]="selectedCategory === category"
+          (click)="selectedCategory = category">
+          {{ category }}
+        </button>
+      </div>
+    </div>
+
+    <div class="loading-panel" *ngIf="loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading today's menu…
+    </div>
+
+    <div class="message-panel error" *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="message-panel" *ngIf="!loading && !errorMessage && visibleItems.length === 0">
+      <strong>New menu items are coming soon.</strong>
+      <span>Message Jo's and we'll help you choose today's favorite.</span>
+    </div>
+
+    <div class="menu-grid" *ngIf="!loading && !errorMessage && visibleItems.length > 0">
+      <article
+        class="menu-card"
+        *ngFor="let item of visibleItems; trackBy: trackById"
+        [class.sold-out]="!item.isAvailable">
+        <div class="item-photo">
+          <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name">
+          <div class="photo-placeholder" *ngIf="!item.imageUrl" aria-hidden="true">
+            <span>JO'S</span>
+          </div>
+          <span class="category-tag">{{ item.category }}</span>
+          <span class="sold-out-tag" *ngIf="!item.isAvailable">Sold out</span>
+        </div>
+
+        <div class="item-copy">
+          <div class="item-title-row">
+            <h3>{{ item.name }}</h3>
+            <strong>{{ formatPrice(item) }}</strong>
+          </div>
+          <p>{{ item.description || 'Freshly prepared with Jo\'s signature flavor.' }}</p>
+          <a
+            *ngIf="item.isAvailable"
+            [href]="orderUrl(item)"
+            target="_blank"
+            rel="noreferrer">
+            Order this <span>↗</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="menu-cta">
+    <div>
+      <p>Need a recommendation?</p>
+      <h2>Tell us what<br>you're craving.</h2>
+    </div>
+    <a
+      href="https://wa.me/9613596091?text=Hi%20Jo%27s!%20Can%20you%20help%20me%20choose%20from%20the%20menu%3F"
+      target="_blank"
+      rel="noreferrer">
+      Message Jo's <span>↗</span>
+    </a>
+  </section>
+</main>

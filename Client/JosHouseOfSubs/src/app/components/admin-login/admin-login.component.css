@@ -1,0 +1,31 @@
+:host { display: block; min-height: 100svh; }
+.login-page { min-height: 100svh; padding: 42px; display: grid; place-items: center; position: relative; background: conic-gradient(var(--pink) 25%, white 0 50%, var(--pink) 0 75%, white 0) 0 0 / 58px 58px; }
+.back-link { position: absolute; top: 28px; left: 32px; z-index: 2; padding: 11px 14px; background: var(--ink); color: white; font-size: .65rem; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; }
+.login-card { width: min(1050px, 100%); min-height: 650px; display: grid; grid-template-columns: .8fr 1.2fr; background: white; border: 4px solid var(--ink); box-shadow: 14px 14px 0 var(--ink); }
+.brand-panel { padding: 48px; display: flex; flex-direction: column; justify-content: space-between; background: var(--pink); border-right: 4px solid var(--ink); }
+.brand-panel img { width: min(100%, 280px); background: white; border: 3px solid var(--ink); box-shadow: 7px 7px 0 white; }
+.brand-panel div { display: flex; flex-direction: column; gap: 9px; color: white; text-transform: uppercase; }
+.brand-panel span { font-size: .65rem; font-weight: 900; letter-spacing: .15em; }
+.brand-panel strong { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 4rem); line-height: .9; }
+form { align-self: center; padding: clamp(42px, 7vw, 90px); }
+.eyebrow { margin: 0 0 15px; color: var(--pink); font-size: .65rem; font-weight: 900; text-transform: uppercase; letter-spacing: .16em; }
+h1 { margin: 0; font-family: var(--font-display); font-size: clamp(3.2rem, 6vw, 6.5rem); line-height: .88; text-transform: uppercase; letter-spacing: -.055em; }
+h1 em { color: var(--pink); font-style: normal; }
+.intro { max-width: 480px; margin: 25px 0 35px; line-height: 1.65; color: #525252; }
+label { display: grid; gap: 8px; margin-top: 19px; }
+label span { font-size: .64rem; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+input { width: 100%; height: 52px; padding: 0 14px; background: var(--cream); border: 2px solid var(--ink); outline: none; }
+input:focus { border-color: var(--pink); box-shadow: 3px 3px 0 var(--pink); }
+small { display: block; margin-top: 6px; color: #a60000; }
+.error-message { margin-top: 18px; padding: 12px; color: #8d0000; background: #fff0f0; border-left: 4px solid #c90000; }
+button { width: 100%; min-height: 56px; margin-top: 28px; display: flex; align-items: center; justify-content: space-between; padding: 0 19px; background: var(--pink); color: white; border: 3px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); cursor: pointer; font-size: .7rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+button:disabled { opacity: .65; cursor: wait; }
+button span { font-size: 1.2rem; }
+@media (max-width: 760px) {
+  .login-page { padding: 80px 20px 30px; }
+  .login-card { grid-template-columns: 1fr; }
+  .brand-panel { padding: 26px; border-right: 0; border-bottom: 4px solid var(--ink); flex-direction: row; align-items: center; gap: 20px; }
+  .brand-panel img { width: 125px; }
+  .brand-panel strong { font-size: 1.6rem; }
+  form { padding: 38px 25px 45px; }
+}

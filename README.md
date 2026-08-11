@@ -1,4 +1,4 @@
-# Jo's House of Subs
+# JO's House of Subs
 
 Angular 15 + Node.js/Express starter organized like the RedCross603 project.
 
