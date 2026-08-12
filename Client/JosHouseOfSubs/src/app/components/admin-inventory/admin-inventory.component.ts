@@ -36,6 +36,7 @@ import {
 
 @Component({
   selector: 'app-admin-inventory',
+  
 
   template: `
     <main>
@@ -134,11 +135,15 @@ import {
 
                   <label>
                     <span>Category *</span>
-
-                    <input
-                      formControlName="category"
-                      placeholder="Subs"
-                    >
+                  
+                    <select formControlName="category">
+                      <option
+                        *ngFor="let category of availableCategories"
+                        [value]="category"
+                      >
+                        {{ category }}
+                      </option>
+                    </select>
                   </label>
                 </div>
 
@@ -305,20 +310,59 @@ import {
               Refresh
             </button>
           </div>
+<div class="menu-filters">
+  <label>
+    <span>Search by name</span>
 
-          <div
-            class="empty"
-            *ngIf="
-              !loading &&
-              items.length === 0
-            "
-          >
-            No menu items.
-          </div>
+    <input
+      type="search"
+      [(ngModel)]="searchText"
+      [ngModelOptions]="{ standalone: true }"
+      placeholder="Search menu items"
+    >
+  </label>
+
+  <label>
+    <span>Filter by category</span>
+
+    <select
+      [(ngModel)]="categoryFilter"
+      [ngModelOptions]="{ standalone: true }"
+    >
+      <option value="">All categories</option>
+
+      <option
+        *ngFor="let category of availableCategories"
+        [value]="category"
+      >
+        {{ category }}
+      </option>
+    </select>
+  </label>
+
+  <button
+    type="button"
+    class="clear-filters"
+    (click)="clearFilters()"
+    [disabled]="!searchText && !categoryFilter"
+  >
+    Clear filters
+  </button>
+</div>
+<div
+  class="empty"
+  *ngIf="!loading && filteredItems.length === 0"
+>
+  {{
+    items.length === 0
+      ? 'No menu items.'
+      : 'No menu items match your filters.'
+  }}
+</div>
 
           <div class="items">
             <article
-              *ngFor="let item of items"
+              *ngFor="let item of filteredItems"
               [class.hidden]="
                 !item.isAvailable
               "
@@ -403,6 +447,57 @@ import {
       background: #fff;
       border-bottom: 3px solid var(--ink);
     }
+      .menu-filters {
+  margin-top: 22px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(190px, .55fr)
+    auto;
+  align-items: end;
+  gap: 14px;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+}
+
+.menu-filters .clear-filters {
+  min-height: 47px;
+  padding: 0 16px;
+  background: var(--ink);
+  color: white;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  font-size: .58rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.menu-filters .clear-filters:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .menu-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .menu-filters .clear-filters {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .menu-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-filters .clear-filters {
+    grid-column: auto;
+  }
+}
 
     header > a,
     header strong,
@@ -756,9 +851,23 @@ import {
 export class AdminInventoryComponent
   implements OnInit {
 
-  items: MenuItem[] = [];
+items: MenuItem[] = [];
 
-  editingId: string | null = null;
+readonly defaultCategories = [
+  'Appetizers',
+  'Beverages',
+  'Burgers',
+  'Cold Cuts',
+  'Kabab Corner',
+  'Pasta',
+  'Salads',
+  'Subs'
+];
+
+searchText = '';
+categoryFilter = '';
+
+editingId: string | null = null;
 
   loading = true;
   saving = false;
@@ -805,6 +914,41 @@ export class AdminInventoryComponent
       featured: [false],
       sortOrder: [0]
     });
+      get availableCategories(): string[] {
+    const existingCategories = this.items
+      .map((item) => item.category.trim())
+      .filter(Boolean);
+
+    return Array.from(
+      new Set([
+        ...this.defaultCategories,
+        ...existingCategories
+      ])
+    ).sort((a, b) => a.localeCompare(b));
+  }
+
+  get filteredItems(): MenuItem[] {
+    const search = this.searchText
+      .trim()
+      .toLowerCase();
+
+    return this.items.filter((item) => {
+      const nameMatches =
+        !search ||
+        item.name.toLowerCase().includes(search);
+
+      const categoryMatches =
+        !this.categoryFilter ||
+        item.category === this.categoryFilter;
+
+      return nameMatches && categoryMatches;
+    });
+  }
+
+  clearFilters(): void {
+    this.searchText = '';
+    this.categoryFilter = '';
+  }
 
   constructor(
     private readonly formBuilder:
