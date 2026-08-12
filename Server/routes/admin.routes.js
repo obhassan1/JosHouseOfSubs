@@ -1,8 +1,15 @@
 const express = require('express');
-const { rateLimit } = require('express-rate-limit');
+
+const {
+  rateLimit
+} = require('express-rate-limit');
 
 const authController = require(
   '../controllers/auth.controller'
+);
+
+const categoryController = require(
+  '../controllers/inventory-category.controller'
 );
 
 const menuController = require(
@@ -14,8 +21,11 @@ const rawMaterialController = require(
 );
 
 const {
-  requireAdmin
-} = require('../middlewares/auth.middleware');
+  requireAuthentication,
+  requireSuperAdmin
+} = require(
+  '../middlewares/auth.middleware'
+);
 
 const router = express.Router();
 
@@ -36,27 +46,11 @@ router.post(
   authController.login
 );
 
-router.use(requireAdmin);
+router.use(requireAuthentication);
 
-router.get(
-  '/menu',
-  menuController.getAdminItems
-);
-
-router.post(
-  '/menu',
-  menuController.createItem
-);
-
-router.put(
-  '/menu/:id',
-  menuController.updateItem
-);
-
-router.delete(
-  '/menu/:id',
-  menuController.deleteItem
-);
+/*
+ * Normal staff and super administrator.
+ */
 
 router.get(
   '/raw-materials',
@@ -64,18 +58,82 @@ router.get(
 );
 
 router.post(
+  '/raw-materials/:id/adjust',
+  rawMaterialController.adjustQuantity
+);
+
+router.get(
+  '/inventory-history',
+  rawMaterialController.getHistory
+);
+
+router.get(
+  '/inventory-categories',
+  categoryController.getCategories
+);
+
+/*
+ * Super administrator only.
+ */
+
+router.get(
+  '/menu',
+  requireSuperAdmin,
+  menuController.getAdminItems
+);
+
+router.post(
+  '/menu',
+  requireSuperAdmin,
+  menuController.createItem
+);
+
+router.put(
+  '/menu/:id',
+  requireSuperAdmin,
+  menuController.updateItem
+);
+
+router.delete(
+  '/menu/:id',
+  requireSuperAdmin,
+  menuController.deleteItem
+);
+
+router.post(
   '/raw-materials',
+  requireSuperAdmin,
   rawMaterialController.createMaterial
 );
 
 router.put(
   '/raw-materials/:id',
+  requireSuperAdmin,
   rawMaterialController.updateMaterial
 );
 
 router.delete(
   '/raw-materials/:id',
+  requireSuperAdmin,
   rawMaterialController.deleteMaterial
+);
+
+router.post(
+  '/inventory-categories',
+  requireSuperAdmin,
+  categoryController.createCategory
+);
+
+router.put(
+  '/inventory-categories/:id',
+  requireSuperAdmin,
+  categoryController.updateCategory
+);
+
+router.delete(
+  '/inventory-categories/:id',
+  requireSuperAdmin,
+  categoryController.deleteCategory
 );
 
 module.exports = router;
