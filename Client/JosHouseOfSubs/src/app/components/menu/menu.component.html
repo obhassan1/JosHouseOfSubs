@@ -62,7 +62,7 @@
             <h3>{{ item.name }}</h3>
             <strong>{{ formatPrice(item) }}</strong>
           </div>
-          <p>{{ item.description || 'Freshly prepared with Jo\'s signature flavor.' }}</p>
+          <p>{{ item.description }}</p>
           <a
             *ngIf="item.isAvailable"
             [href]="orderUrl(item)"
